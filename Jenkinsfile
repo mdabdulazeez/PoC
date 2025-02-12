@@ -31,17 +31,18 @@ pipeline {
             steps {
                 powershell '''
                 Write-Host "Deploying website to IIS..."
-                # Ensure IIS is installed
-                $iisFeature = Get-WindowsFeature -Name Web-Server
-                if (-not $iisFeature.Installed) {
-                    Write-Host "IIS is not installed. Installing now..."
-                    Install-WindowsFeature -Name Web-Server -IncludeManagementTools
-                }
                 
+                # Check if IIS is installed using DISM (works on Windows 10/11 and Server)
+                $iisInstalled = (dism /online /get-features | Select-String "IIS-WebServer" -Context 0,1) -match "Enabled"
+                if (-not $iisInstalled) {
+                    Write-Host "IIS is not installed. Installing now..."
+                    dism /online /enable-feature /featurename:IIS-WebServer /all
+                }
+
                 # Copy website files to IIS root directory
                 Write-Host "Copying files to IIS root..."
                 Copy-Item -Path build\\* -Destination C:\\inetpub\\wwwroot -Recurse -Force
-                
+
                 # Restart IIS to apply changes
                 Write-Host "Restarting IIS..."
                 iisreset
