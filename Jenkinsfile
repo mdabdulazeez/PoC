@@ -11,20 +11,20 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'echo "Building HTML/CSS project"'
-                sh 'mkdir -p build'
-                sh 'cp -r * build/'
-                sh 'echo "Build complete!"'
+                powershell 'Write-Host "Building HTML/CSS project"'
+                powershell 'New-Item -ItemType Directory -Path build -Force'
+                powershell 'Copy-Item -Path * -Destination build -Recurse'
+                powershell 'Write-Host "Build complete!"'
             }
         }
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                powershell 'terraform init'
             }
         }
         stage('Terraform Apply') {
             steps {
-                sh 'terraform apply --auto-approve'
+                powershell 'terraform apply --auto-approve'
             }
         }
     }
