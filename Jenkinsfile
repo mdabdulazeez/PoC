@@ -41,7 +41,7 @@ pipeline {
 
                 # Copy website files to IIS root directory
                 Write-Host "Copying files to IIS root..."
-                Copy-Item -Path build\\* -Destination C:\\inetpub\\wwwroot -Recurse -Force
+                Copy-Item -Path build\\* -Destination C:\\inetpub\\wwwroot\\PoC -Recurse -Force
 
                 # Restart IIS to apply changes
                 Write-Host "Restarting IIS..."
