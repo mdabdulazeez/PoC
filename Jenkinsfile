@@ -31,14 +31,28 @@ pipeline {
             steps {
                 powershell '''
                 Write-Host "Deploying website to IIS..."
-                
-                # Copy website files to IIS root directory
-                Write-Host "Copying files to IIS root..."
-                Copy-Item -Path build\\* -Destination C:\\inetpub\\wwwroot\\PoC -Recurse -Force
 
-                # Restart IIS to apply changes
-                Write-Host "Restarting IIS..."
-                iisreset
+                # Define the target directory with write permissions
+                $targetDirectory = "C:\\inetpub\\wwwroot\\PoC"
+
+                # Check if the target directory exists, if not, attempt to create it
+                if (!(Test-Path -Path $targetDirectory)) {
+                    try {
+                        New-Item -ItemType Directory -Path $targetDirectory -Force
+                        Write-Host "Created directory: $targetDirectory"
+                    } catch {
+                        Write-Host "Failed to create directory: $_"
+                        exit 1
+                    }
+                }
+
+                # Copy website files to the target directory
+                Write-Host "Copying files to $targetDirectory..."
+                Copy-Item -Path build\\* -Destination $targetDirectory -Recurse -Force
+
+                # Optional: Restart IIS if needed, but this requires admin privileges
+                # Uncomment the following line if you have the necessary permissions
+                # iisreset
                 '''
             }
         }
