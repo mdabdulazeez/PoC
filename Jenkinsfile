@@ -32,10 +32,6 @@ pipeline {
                 powershell '''
                 Write-Host "Deploying website to IIS..."
                 
-                # Check if IIS is installed using DISM (works on Windows 10/11 and Server)
-                $iisInstalled = (dism /online /get-features | Select-String "IIS-WebServer" -Context 0,1) -match "Enabled"
-               
-
                 # Copy website files to IIS root directory
                 Write-Host "Copying files to IIS root..."
                 Copy-Item -Path build\\* -Destination C:\\inetpub\\wwwroot\\PoC -Recurse -Force
